@@ -76,6 +76,9 @@ type RecommendationResponse = {
   destination: string;
   summary: string;
   estimatedDailyBudget: string;
+  totalEstimatedCost: string;
+  estimatedSavings: string;
+  budgetAdvisory: string;
   itinerary: RecommendationDay[];
   packingList: string[];
   safetyNotes: string[];
@@ -434,6 +437,31 @@ export default function Home() {
                       {recommendation.estimatedDailyBudget}
                     </p>
                   </div>
+                  <div>
+                    <p className="text-xs uppercase text-zinc-500">
+                      Total estimated cost
+                    </p>
+                    <p className="font-semibold text-zinc-900">
+                      {recommendation.totalEstimatedCost}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase text-zinc-500">
+                      Estimated savings
+                    </p>
+                    <p className="font-semibold text-emerald-700">
+                      {recommendation.estimatedSavings}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">
+                  <p className="text-xs uppercase text-emerald-700">
+                    Budget advisory
+                  </p>
+                  <p className="mt-2 text-sm text-emerald-900">
+                    {recommendation.budgetAdvisory}
+                  </p>
                 </div>
 
                 <div className="flex flex-col gap-3">
