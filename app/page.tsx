@@ -62,7 +62,7 @@ const getLocationLabel = (city?: string, region?: string) => {
   if (region) {
     return region;
   }
-  return "Lokasi saat ini";
+  return "Current location";
 };
 
 type RecommendationDay = {
@@ -106,8 +106,8 @@ export default function Home() {
   );
 
   const budgetHint = budget
-    ? `Budget perjalanan: ${currencyFormatter.format(budget)}`
-    : "Masukkan budget total perjalanan";
+    ? `Trip budget: ${currencyFormatter.format(budget)}`
+    : "Enter your total trip budget";
 
   const handleBudgetChange = (value: string) => {
     const nextValue = buildBudgetValue(value);
@@ -123,7 +123,7 @@ export default function Home() {
 
   const handleUseLocation = () => {
     if (!navigator.geolocation) {
-      setError("Perangkat ini tidak mendukung geolocation.");
+      setError("This device does not support geolocation.");
       return;
     }
 
@@ -142,7 +142,7 @@ export default function Home() {
             }
           );
           if (!response.ok) {
-            throw new Error("Gagal mengambil lokasi.");
+            throw new Error("Failed to fetch location.");
           }
           const data = await response.json();
           const city =
@@ -155,13 +155,13 @@ export default function Home() {
           setCurrentRegion(region || "");
         } catch (locationError) {
           console.error(locationError);
-          setError("Tidak bisa mengambil lokasi, coba lagi.");
+          setError("Unable to fetch location, please try again.");
         } finally {
           setLoadingLocation(false);
         }
       },
       () => {
-        setError("Izin lokasi ditolak.");
+        setError("Location permission was denied.");
         setLoadingLocation(false);
       },
       { timeout: 10000 }
@@ -194,7 +194,7 @@ export default function Home() {
 
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
-        throw new Error(payload.error || "Gagal mengambil rekomendasi.");
+        throw new Error(payload.error || "Failed to fetch recommendations.");
       }
 
       const payload = (await response.json()) as RecommendationResponse;
@@ -204,7 +204,7 @@ export default function Home() {
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "Terjadi kesalahan."
+          : "Something went wrong."
       );
     } finally {
       setLoadingRecommendation(false);
@@ -219,14 +219,12 @@ export default function Home() {
             Budvisory AI
           </p>
           <h1 className="text-4xl font-semibold leading-tight text-zinc-900 sm:text-5xl">
-            Rencanakan perjalanan domestik di Indonesia dengan budget yang
-            realistis.
+            Plan domestic travel in Indonesia with a realistic budget.
           </h1>
           <p className="max-w-3xl text-base leading-7 text-zinc-600">
-            Tentukan kota tujuan, durasi perjalanan, dan budget Anda. Kami akan
-            menyiapkan itinerary harian yang sesuai dengan kemampuan finansial
-            Anda, termasuk opsi dream destination jika ingin merencanakan
-            perjalanan impian.
+            Choose a destination city, trip length, and your budget. We'll
+            prepare a day-by-day itinerary that fits your finances, including a
+            dream destination option if you're planning a wishlist trip.
           </p>
         </header>
 
@@ -237,7 +235,7 @@ export default function Home() {
           >
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm text-zinc-500">Lokasi sekarang</p>
+                <p className="text-sm text-zinc-500">Current location</p>
                 <p className="text-lg font-semibold text-zinc-900">
                   {locationLabel}
                 </p>
@@ -247,13 +245,13 @@ export default function Home() {
                 onClick={handleUseLocation}
                 className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100"
               >
-                {loadingLocation ? "Mencari..." : "Gunakan lokasi saya"}
+                {loadingLocation ? "Locating..." : "Use my location"}
               </button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
-                Kota tujuan
+                Destination city
                 <select
                   value={destination}
                   onChange={(event) => setDestination(event.target.value)}
@@ -268,7 +266,7 @@ export default function Home() {
               </label>
 
               <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
-                Durasi (hari)
+                Duration (days)
                 <input
                   type="number"
                   min={1}
@@ -281,7 +279,7 @@ export default function Home() {
             </div>
 
             <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
-              Total budget perjalanan (IDR)
+              Total trip budget (IDR)
               <input
                 type="text"
                 inputMode="numeric"
@@ -300,13 +298,13 @@ export default function Home() {
                 onChange={(event) => setShowAdvanced(event.target.checked)}
                 className="h-4 w-4 rounded border-zinc-300"
               />
-              Tampilkan opsi lanjutan (gaji & usia)
+              Show advanced options (salary & age)
             </label>
 
             {showAdvanced && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
-                  Gaji per bulan (IDR)
+                  Monthly salary (IDR)
                   <input
                     type="text"
                     inputMode="numeric"
@@ -318,7 +316,7 @@ export default function Home() {
                 </label>
 
                 <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
-                  Usia
+                  Age
                   <input
                     type="number"
                     min={17}
@@ -338,16 +336,16 @@ export default function Home() {
                 onChange={(event) => setDreamTrip(event.target.checked)}
                 className="h-4 w-4 rounded border-zinc-300"
               />
-              Ini dream destination, prioritaskan pengalaman terbaik
+              This is a dream destination, prioritize top experiences
             </label>
 
             <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
-              Preferensi tambahan
+              Additional preferences
               <textarea
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
                 rows={3}
-                placeholder="Contoh: suka kuliner lokal, ingin itinerary santai"
+                placeholder="Example: love local food, prefer a relaxed itinerary"
                 className="rounded-2xl border border-zinc-200 px-4 py-3 text-base text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none"
               />
             </label>
@@ -364,38 +362,40 @@ export default function Home() {
               className="flex h-12 items-center justify-center rounded-full bg-zinc-900 text-base font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-400"
             >
               {loadingRecommendation
-                ? "Menyusun rekomendasi..."
-                : "Minta rekomendasi perjalanan"}
+                ? "Building recommendations..."
+                : "Get travel recommendations"}
             </button>
           </form>
 
           <section className="flex flex-col gap-4 rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-zinc-900">
-                Rekomendasi AI
+                AI Recommendations
               </h2>
               <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-600">
-                Output JSON
+                JSON Output
               </span>
             </div>
             {recommendation ? (
               <div className="flex flex-col gap-4">
                 <div className="rounded-2xl bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-                  <p className="text-xs uppercase text-zinc-500">Ringkasan</p>
+                  <p className="text-xs uppercase text-zinc-500">Summary</p>
                   <p className="text-base font-semibold text-zinc-900">
                     {recommendation.summary}
                   </p>
                 </div>
                 <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-white p-4">
                   <div>
-                    <p className="text-xs uppercase text-zinc-500">Kota tujuan</p>
+                    <p className="text-xs uppercase text-zinc-500">
+                      Destination city
+                    </p>
                     <p className="font-semibold text-zinc-900">
                       {recommendation.destination}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs uppercase text-zinc-500">
-                      Estimasi budget harian
+                      Estimated daily budget
                     </p>
                     <p className="font-semibold text-zinc-900">
                       {recommendation.estimatedDailyBudget}
@@ -410,7 +410,7 @@ export default function Home() {
                       className="rounded-2xl border border-zinc-100 bg-white p-4"
                     >
                       <p className="text-xs uppercase text-zinc-500">
-                        Hari {day.day}
+                        Day {day.day}
                       </p>
                       <p className="text-base font-semibold text-zinc-900">
                         {day.title}
@@ -430,7 +430,7 @@ export default function Home() {
                 <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
                   <div>
                     <p className="text-xs uppercase text-zinc-500">
-                      Barang yang perlu dibawa
+                      Packing list
                     </p>
                     <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-600">
                       {recommendation.packingList.map((item) => (
@@ -439,7 +439,9 @@ export default function Home() {
                     </ul>
                   </div>
                   <div>
-                    <p className="text-xs uppercase text-zinc-500">Catatan aman</p>
+                    <p className="text-xs uppercase text-zinc-500">
+                      Safety notes
+                    </p>
                     <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-600">
                       {recommendation.safetyNotes.map((item) => (
                         <li key={item}>{item}</li>
@@ -451,11 +453,11 @@ export default function Home() {
             ) : (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-zinc-200 px-6 py-10 text-center text-sm text-zinc-500">
                 <p className="text-base font-semibold text-zinc-700">
-                  Belum ada rekomendasi.
+                  No recommendations yet.
                 </p>
                 <p>
-                  Isi form di sebelah kiri dan minta rekomendasi perjalanan dari
-                  AI.
+                  Fill out the form on the left to request recommendations from
+                  the AI.
                 </p>
               </div>
             )}

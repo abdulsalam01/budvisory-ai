@@ -29,11 +29,11 @@ const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
 const buildPrompt = (payload: RecommendationRequest) => {
-  return `Kamu adalah travel planner untuk perjalanan domestik di Indonesia.
+  return `You are a travel planner for domestic travel in Indonesia.
 
-Balas dalam format JSON yang VALID dan STRICT tanpa markdown, tanpa komentar, tanpa teks tambahan.
+Reply with VALID and STRICT JSON only. No markdown, no comments, no extra text.
 
-Struktur JSON wajib mengikuti format berikut (gunakan string untuk semua nilai text):
+The JSON structure must follow this schema (use strings for all text values):
 {
   "destination": "",
   "summary": "",
@@ -50,17 +50,17 @@ Struktur JSON wajib mengikuti format berikut (gunakan string untuk semua nilai t
   "safetyNotes": [""]
 }
 
-Gunakan Bahasa Indonesia yang natural. Pastikan itinerary memiliki jumlah hari sesuai duration.
+Use natural English. Make sure the itinerary has exactly the same number of days as duration.
 
-Detail perjalanan:
-- Kota asal: ${payload.origin}
-- Kota tujuan: ${payload.destination}
-- Durasi: ${payload.duration} hari
-- Budget total (IDR): ${payload.budget}
-- Dream destination: ${payload.dreamTrip ? "Ya" : "Tidak"}
-- Gaji per bulan (opsional): ${payload.salary ?? "Tidak diisi"}
-- Usia (opsional): ${payload.age ?? "Tidak diisi"}
-- Preferensi tambahan: ${payload.notes || "Tidak ada"}
+Trip details:
+- Origin city: ${payload.origin}
+- Destination city: ${payload.destination}
+- Duration: ${payload.duration} days
+- Total budget (IDR): ${payload.budget}
+- Dream destination: ${payload.dreamTrip ? "Yes" : "No"}
+- Monthly salary (optional): ${payload.salary ?? "Not provided"}
+- Age (optional): ${payload.age ?? "Not provided"}
+- Additional preferences: ${payload.notes || "None"}
 `;
 };
 
@@ -68,7 +68,7 @@ const extractJson = (text: string) => {
   const firstBrace = text.indexOf("{");
   const lastBrace = text.lastIndexOf("}");
   if (firstBrace === -1 || lastBrace === -1) {
-    throw new Error("Format JSON tidak ditemukan.");
+    throw new Error("JSON format not found.");
   }
   const jsonString = text.slice(firstBrace, lastBrace + 1);
   return JSON.parse(jsonString) as RecommendationResponse;
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "GEMINI_API_KEY belum diatur." },
+        { error: "GEMINI_API_KEY is not configured." },
         { status: 500 }
       );
     }
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
 
     if (!payload.destination || !payload.duration || !payload.budget) {
       return NextResponse.json(
-        { error: "Form belum lengkap." },
+        { error: "Please complete all required fields." },
         { status: 400 }
       );
     }
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
     if (!response.ok) {
       const errorText = await response.text();
       return NextResponse.json(
-        { error: `Gagal memanggil Gemini API: ${errorText}` },
+        { error: `Failed to call Gemini API: ${errorText}` },
         { status: 500 }
       );
     }
@@ -130,7 +130,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Terjadi kesalahan saat membuat rekomendasi." },
+      { error: "Something went wrong while generating recommendations." },
       { status: 500 }
     );
   }
