@@ -70,6 +70,8 @@ const sanitizeJson = (value: string) =>
   value
     .replace(/```json/gi, "")
     .replace(/```/g, "")
+    .replace(/\/\/.*$/gm, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/,\s*([}\]])/g, "$1")
     .trim();
 
@@ -77,10 +79,14 @@ const repairJson = (value: string) =>
   value
     .replace(/}\s*{/g, "},{")
     .replace(/]\s*\[/g, "],[")
-    .replace(/"\s*(?="[^"]+"\s*:)/g, '",')
-    .replace(/"\s*(?="[^"]+"(?!\s*:))/g, '",')
+    .replace(/"\s*(?=")/g, '",')
+    .replace(/"\s*(?=[{\[])/g, '",')
     .replace(/(\d|\}|\])\s*(?=")/g, "$1,")
-    .replace(/(\d|\}|\])\s*(?=[{\[])/g, "$1,");
+    .replace(/(\d|\}|\])\s*(?=[{\[])/g, "$1,")
+    .replace(/}\s*(?=")/g, "},")
+    .replace(/]\s*(?=")/g, "],")
+    .replace(/}\s*(?=[{\[])/g, "},")
+    .replace(/]\s*(?=[{\[])/g, "],");
 
 const extractJson = (text: string) => {
   const firstBrace = text.indexOf("{");
