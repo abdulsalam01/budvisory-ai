@@ -79,12 +79,12 @@ type RecommendationResponse = {
 
 type CarouselSlide =
   | {
-      type: "summary";
-    }
+    type: "summary";
+  }
   | {
-      type: "day";
-      day: RecommendationDay;
-    };
+    type: "day";
+    day: RecommendationDay;
+  };
 
 export default function Home() {
   const [currentCity, setCurrentCity] = useState("");
@@ -113,12 +113,13 @@ export default function Home() {
   );
 
   const slides = useMemo<CarouselSlide[]>(() => {
-    if (!recommendation) {
-      return [];
-    }
+    if (!recommendation) return [];
+
     return [
       { type: "summary" },
-      ...recommendation.itinerary.map((day) => ({ type: "day", day })),
+      ...recommendation.itinerary.map(
+        (day): CarouselSlide => ({ type: "day", day })
+      ),
     ];
   }, [recommendation]);
 
