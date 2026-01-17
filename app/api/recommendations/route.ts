@@ -15,6 +15,9 @@ type RecommendationResponse = {
   destination: string;
   summary: string;
   estimatedDailyBudget: string;
+  totalEstimatedCost: string;
+  estimatedSavings: string;
+  budgetAdvisory: string;
   itinerary: {
     day: number;
     title: string;
@@ -37,6 +40,9 @@ The JSON structure must follow this schema (use strings for all text values):
   "destination": "",
   "summary": "",
   "estimatedDailyBudget": "",
+  "totalEstimatedCost": "",
+  "estimatedSavings": "",
+  "budgetAdvisory": "",
   "itinerary": [
     {
       "day": 1,
@@ -60,6 +66,11 @@ Trip details:
 - Monthly salary (optional): ${payload.salary ?? "Not provided"}
 - Age (optional): ${payload.age ?? "Not provided"}
 - Additional preferences: ${payload.notes || "None"}
+
+For "estimatedDailyBudget", estimate the average daily spending in IDR based on the total budget and itinerary mix.
+For "totalEstimatedCost", multiply the daily estimate by duration (round reasonably).
+For "estimatedSavings", compute (total budget - total estimated cost) and explain if it's a buffer or requires adjustment.
+For "budgetAdvisory", provide a detailed, advisor-style response that covers daily spend guidance and savings strategy.
 `;
 };
 
