@@ -435,7 +435,7 @@ export default function Home() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-100 bg-white px-4 py-3 text-sm text-zinc-600">
                   <div>
-                    <p className="text-xs uppercase text-zinc-500">Carousel</p>
+                    <p className="text-xs uppercase text-zinc-500">YOUR TRIP</p>
                     <p className="text-sm font-semibold text-zinc-900">
                       Slide {Math.min(activeSlide + 1, slides.length)} of{" "}
                       {slides.length}
