@@ -170,11 +170,17 @@ export default function Home() {
           setLoadingLocation(false);
         }
       },
-      () => {
-        setError("Location permission was denied.");
+      (locationError) => {
+        if (locationError.code === locationError.TIMEOUT) {
+          setError(
+            "Location request timed out. Please enter your origin manually."
+          );
+        } else {
+          setError("Location permission was denied.");
+        }
         setLoadingLocation(false);
       },
-      { timeout: 10000 }
+      { timeout: 8000, maximumAge: 0, enableHighAccuracy: false }
     );
   };
 
@@ -260,8 +266,8 @@ export default function Home() {
                 </button>
               </div>
               <p className="text-xs text-zinc-500">
-                Geolocation requires HTTPS or localhost. If it fails, enter your
-                origin manually below.
+                Geolocation requires HTTPS or localhost and may take up to 8
+                seconds. If it fails, enter your origin manually below.
               </p>
             </div>
 

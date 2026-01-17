@@ -64,6 +64,18 @@ Trip details:
 `;
 };
 
+const tryParseJson = (value: string) => {
+  return JSON.parse(value) as RecommendationResponse;
+};
+
+const sanitizeJson = (value: string) => {
+  return value
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .replace(/,\s*([}\]])/g, "$1")
+    .trim();
+};
+
 const extractJson = (text: string) => {
   const firstBrace = text.indexOf("{");
   const lastBrace = text.lastIndexOf("}");
@@ -71,7 +83,16 @@ const extractJson = (text: string) => {
     throw new Error("JSON format not found.");
   }
   const jsonString = text.slice(firstBrace, lastBrace + 1);
-  return JSON.parse(jsonString) as RecommendationResponse;
+  try {
+    return tryParseJson(jsonString);
+  } catch (error) {
+    const sanitized = sanitizeJson(jsonString);
+    try {
+      return tryParseJson(sanitized);
+    } catch {
+      throw error;
+    }
+  }
 };
 
 export async function POST(request: Request) {
@@ -108,6 +129,7 @@ export async function POST(request: Request) {
         generationConfig: {
           temperature: 0.7,
           maxOutputTokens: 1200,
+          responseMimeType: "application/json",
         },
       }),
     });
