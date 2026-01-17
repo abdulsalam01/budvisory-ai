@@ -64,17 +64,23 @@ Trip details:
 `;
 };
 
-const tryParseJson = (value: string) => {
-  return JSON.parse(value) as RecommendationResponse;
-};
+const tryParseJson = (value: string) => JSON.parse(value) as RecommendationResponse;
 
-const sanitizeJson = (value: string) => {
-  return value
+const sanitizeJson = (value: string) =>
+  value
     .replace(/```json/gi, "")
     .replace(/```/g, "")
     .replace(/,\s*([}\]])/g, "$1")
     .trim();
-};
+
+const repairJson = (value: string) =>
+  value
+    .replace(/}\s*{/g, "},{")
+    .replace(/]\s*\[/g, "],[")
+    .replace(/"\s*(?="[^"]+"\s*:)/g, '",')
+    .replace(/"\s*(?="[^"]+"(?!\s*:))/g, '",')
+    .replace(/(\d|\}|\])\s*(?=")/g, "$1,")
+    .replace(/(\d|\}|\])\s*(?=[{\[])/g, "$1,");
 
 const extractJson = (text: string) => {
   const firstBrace = text.indexOf("{");
@@ -90,7 +96,12 @@ const extractJson = (text: string) => {
     try {
       return tryParseJson(sanitized);
     } catch {
-      throw error;
+      const repaired = repairJson(sanitized);
+      try {
+        return tryParseJson(repaired);
+      } catch {
+        throw error;
+      }
     }
   }
 };
