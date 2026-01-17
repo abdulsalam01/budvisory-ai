@@ -25,8 +25,7 @@ type RecommendationResponse = {
   safetyNotes: string[];
 };
 
-const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 const buildPrompt = (payload: RecommendationRequest) => {
   return `You are a travel planner for domestic travel in Indonesia.
@@ -145,7 +144,7 @@ export async function POST(request: Request) {
         ],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 1200,
+          maxOutputTokens: 8192,
           responseMimeType: "application/json",
         },
       }),
