@@ -40,6 +40,15 @@ const buildBudgetValue = (rawValue: string) => {
   };
 };
 
+const formatIdrValue = (value: string) => {
+  const digitsOnly = value.replace(/\D/g, "");
+  if (!digitsOnly) {
+    return value;
+  }
+  const numeric = Number.parseInt(digitsOnly, 10);
+  return currencyFormatter.format(numeric);
+};
+
 const buildSalaryValue = (rawValue: string) => {
   const digitsOnly = rawValue.replace(/\D/g, "");
   if (!digitsOnly) {
@@ -434,7 +443,7 @@ export default function Home() {
                       Estimated daily budget
                     </p>
                     <p className="font-semibold text-zinc-900">
-                      {recommendation.estimatedDailyBudget}
+                      {formatIdrValue(recommendation.estimatedDailyBudget)}
                     </p>
                   </div>
                   <div>
@@ -442,7 +451,7 @@ export default function Home() {
                       Total estimated cost
                     </p>
                     <p className="font-semibold text-zinc-900">
-                      {recommendation.totalEstimatedCost}
+                      {formatIdrValue(recommendation.totalEstimatedCost)}
                     </p>
                   </div>
                   <div>
@@ -450,7 +459,7 @@ export default function Home() {
                       Estimated savings
                     </p>
                     <p className="font-semibold text-emerald-700">
-                      {recommendation.estimatedSavings}
+                      {formatIdrValue(recommendation.estimatedSavings)}
                     </p>
                   </div>
                 </div>
