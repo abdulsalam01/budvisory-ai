@@ -84,6 +84,7 @@ type RecommendationResponse = {
 export default function Home() {
   const [currentCity, setCurrentCity] = useState("");
   const [currentRegion, setCurrentRegion] = useState("");
+  const [originInput, setOriginInput] = useState("Current location");
   const [destination, setDestination] = useState(destinationOptions[0]);
   const [duration, setDuration] = useState("3");
   const [budgetInput, setBudgetInput] = useState("");
@@ -126,6 +127,12 @@ export default function Home() {
       setError("This device does not support geolocation.");
       return;
     }
+    if (!window.isSecureContext) {
+      setError(
+        "Geolocation requires a secure context (HTTPS or localhost). Please enter your origin manually."
+      );
+      return;
+    }
 
     setError(null);
     setLoadingLocation(true);
@@ -151,8 +158,11 @@ export default function Home() {
             data.address?.village ||
             data.address?.county;
           const region = data.address?.state || data.address?.region;
-          setCurrentCity(city || "");
-          setCurrentRegion(region || "");
+          const nextCity = city || "";
+          const nextRegion = region || "";
+          setCurrentCity(nextCity);
+          setCurrentRegion(nextRegion);
+          setOriginInput(getLocationLabel(nextCity, nextRegion));
         } catch (locationError) {
           console.error(locationError);
           setError("Unable to fetch location, please try again.");
@@ -181,7 +191,7 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          origin: locationLabel,
+          origin: originInput || locationLabel,
           destination,
           duration: Number(duration),
           budget,
@@ -233,23 +243,40 @@ export default function Home() {
             onSubmit={handleSubmit}
             className="flex flex-col gap-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5"
           >
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-zinc-500">Current location</p>
-                <p className="text-lg font-semibold text-zinc-900">
-                  {locationLabel}
-                </p>
+            <div className="flex flex-col gap-3 rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm text-zinc-500">Detected location</p>
+                  <p className="text-lg font-semibold text-zinc-900">
+                    {locationLabel}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleUseLocation}
+                  className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100"
+                >
+                  {loadingLocation ? "Locating..." : "Use my location"}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleUseLocation}
-                className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100"
-              >
-                {loadingLocation ? "Locating..." : "Use my location"}
-              </button>
+              <p className="text-xs text-zinc-500">
+                Geolocation requires HTTPS or localhost. If it fails, enter your
+                origin manually below.
+              </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
+                Origin city
+                <input
+                  type="text"
+                  value={originInput}
+                  onChange={(event) => setOriginInput(event.target.value)}
+                  placeholder="Jakarta"
+                  className="h-11 rounded-2xl border border-zinc-200 px-4 text-base text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none"
+                />
+              </label>
+
               <label className="flex flex-col gap-2 text-sm font-medium text-zinc-700">
                 Destination city
                 <select
