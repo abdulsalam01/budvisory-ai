@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import destinationOptions from "./data/destinations.json";
 
@@ -58,6 +59,8 @@ const getLocationLabel = (city?: string, region?: string) => {
   return "Current location";
 };
 
+const USERNAME_STORAGE_KEY = "budvisory.username";
+
 type RecommendationDay = {
   day: number;
   title: string;
@@ -87,6 +90,8 @@ type CarouselSlide =
   };
 
 export default function Home() {
+  const router = useRouter();
+  const [username, setUsername] = useState("");
   const [currentCity, setCurrentCity] = useState("");
   const [currentRegion, setCurrentRegion] = useState("");
   const [originInput, setOriginInput] = useState("Current location");
@@ -128,6 +133,20 @@ export default function Home() {
       setActiveSlide(0);
     }
   }, [recommendation]);
+
+  useEffect(() => {
+    const storedUsername =
+      typeof window === "undefined"
+        ? ""
+        : window.localStorage.getItem(USERNAME_STORAGE_KEY) || "";
+
+    if (!storedUsername) {
+      router.replace("/login");
+      return;
+    }
+
+    setUsername(storedUsername);
+  }, [router]);
 
   const budgetHint = budget
     ? `Trip budget: ${currencyFormatter.format(budget)}`
@@ -256,6 +275,9 @@ export default function Home() {
         <header className="flex flex-col gap-3">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
             Budvisory AI
+          </p>
+          <p className="text-sm font-medium text-zinc-500">
+            Welcome back, {username || "traveler"}.
           </p>
           <h1 className="text-4xl font-semibold leading-tight text-zinc-900 sm:text-5xl">
             Plan domestic travel in Indonesia with a realistic budget.
