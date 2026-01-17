@@ -1,24 +1,8 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 
-const destinationOptions = [
-  "Jakarta",
-  "Bandung",
-  "Surabaya",
-  "Yogyakarta",
-  "Denpasar",
-  "Medan",
-  "Makassar",
-  "Semarang",
-  "Malang",
-  "Lombok",
-  "Labuan Bajo",
-  "Padang",
-  "Palembang",
-  "Balikpapan",
-  "Manado",
-];
+import destinationOptions from "./data/destinations.json";
 
 const currencyFormatter = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -93,6 +77,15 @@ type RecommendationResponse = {
   safetyNotes: string[];
 };
 
+type CarouselSlide =
+  | {
+      type: "summary";
+    }
+  | {
+      type: "day";
+      day: RecommendationDay;
+    };
+
 export default function Home() {
   const [currentCity, setCurrentCity] = useState("");
   const [currentRegion, setCurrentRegion] = useState("");
@@ -112,11 +105,28 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [recommendation, setRecommendation] =
     useState<RecommendationResponse | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const locationLabel = useMemo(
     () => getLocationLabel(currentCity, currentRegion),
     [currentCity, currentRegion]
   );
+
+  const slides = useMemo<CarouselSlide[]>(() => {
+    if (!recommendation) {
+      return [];
+    }
+    return [
+      { type: "summary" },
+      ...recommendation.itinerary.map((day) => ({ type: "day", day })),
+    ];
+  }, [recommendation]);
+
+  useEffect(() => {
+    if (recommendation) {
+      setActiveSlide(0);
+    }
+  }, [recommendation]);
 
   const budgetHint = budget
     ? `Trip budget: ${currencyFormatter.format(budget)}`
@@ -423,102 +433,135 @@ export default function Home() {
             </div>
             {recommendation ? (
               <div className="flex flex-col gap-4">
-                <div className="rounded-2xl bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-                  <p className="text-xs uppercase text-zinc-500">Summary</p>
-                  <p className="text-base font-semibold text-zinc-900">
-                    {recommendation.summary}
-                  </p>
-                </div>
-                <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-white p-4">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-100 bg-white px-4 py-3 text-sm text-zinc-600">
                   <div>
-                    <p className="text-xs uppercase text-zinc-500">
-                      Destination city
-                    </p>
-                    <p className="font-semibold text-zinc-900">
-                      {recommendation.destination}
+                    <p className="text-xs uppercase text-zinc-500">Carousel</p>
+                    <p className="text-sm font-semibold text-zinc-900">
+                      Slide {Math.min(activeSlide + 1, slides.length)} of{" "}
+                      {slides.length}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-xs uppercase text-zinc-500">
-                      Estimated daily budget
-                    </p>
-                    <p className="font-semibold text-zinc-900">
-                      {formatIdrValue(recommendation.estimatedDailyBudget)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase text-zinc-500">
-                      Total estimated cost
-                    </p>
-                    <p className="font-semibold text-zinc-900">
-                      {formatIdrValue(recommendation.totalEstimatedCost)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase text-zinc-500">
-                      Estimated savings
-                    </p>
-                    <p className="font-semibold text-emerald-700">
-                      {formatIdrValue(recommendation.estimatedSavings)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">
-                  <p className="text-xs uppercase text-emerald-700">
-                    Budget advisory
-                  </p>
-                  <p className="mt-2 text-sm text-emerald-900">
-                    {recommendation.budgetAdvisory}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  {recommendation.itinerary.map((day) => (
-                    <div
-                      key={day.day}
-                      className="rounded-2xl border border-zinc-100 bg-white p-4"
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveSlide((prev) => Math.max(prev - 1, 0))
+                      }
+                      disabled={activeSlide === 0}
+                      className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-semibold text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:border-zinc-100 disabled:text-zinc-300"
                     >
-                      <p className="text-xs uppercase text-zinc-500">
-                        Day {day.day}
-                      </p>
-                      <p className="text-base font-semibold text-zinc-900">
-                        {day.title}
-                      </p>
-                      <p className="mt-2 text-sm text-zinc-600">
-                        {day.description}
-                      </p>
-                      {day.budgetTips && (
-                        <p className="mt-2 text-xs font-medium text-emerald-700">
-                          {day.budgetTips}
-                        </p>
-                      )}
-                    </div>
-                  ))}
+                      Prev
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveSlide((prev) =>
+                          Math.min(prev + 1, slides.length - 1)
+                        )
+                      }
+                      disabled={activeSlide === slides.length - 1}
+                      className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-semibold text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:border-zinc-100 disabled:text-zinc-300"
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
-                  <div>
-                    <p className="text-xs uppercase text-zinc-500">
-                      Packing list
-                    </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-600">
-                      {recommendation.packingList.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
+                {slides[activeSlide]?.type === "summary" ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="rounded-2xl bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
+                      <p className="text-xs uppercase text-zinc-500">Summary</p>
+                      <p className="text-base font-semibold text-zinc-900">
+                        {recommendation.summary}
+                      </p>
+                    </div>
+                    <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-white p-4">
+                      <div>
+                        <p className="text-xs uppercase text-zinc-500">
+                          Destination city
+                        </p>
+                        <p className="font-semibold text-zinc-900">
+                          {recommendation.destination}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase text-zinc-500">
+                          Estimated daily budget
+                        </p>
+                        <p className="font-semibold text-zinc-900">
+                          {formatIdrValue(
+                            recommendation.estimatedDailyBudget
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase text-zinc-500">
+                          Total estimated cost
+                        </p>
+                        <p className="font-semibold text-zinc-900">
+                          {formatIdrValue(recommendation.totalEstimatedCost)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase text-zinc-500">
+                          Estimated savings
+                        </p>
+                        <p className="font-semibold text-emerald-700">
+                          {formatIdrValue(recommendation.estimatedSavings)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">
+                      <p className="text-xs uppercase text-emerald-700">
+                        Budget advisory
+                      </p>
+                      <p className="mt-2 text-sm text-emerald-900">
+                        {recommendation.budgetAdvisory}
+                      </p>
+                    </div>
+
+                    <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
+                      <div>
+                        <p className="text-xs uppercase text-zinc-500">
+                          Packing list
+                        </p>
+                        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-600">
+                          {recommendation.packingList.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase text-zinc-500">
+                          Safety notes
+                        </p>
+                        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-600">
+                          {recommendation.safetyNotes.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-                  <div>
+                ) : slides[activeSlide]?.type === "day" ? (
+                  <div className="rounded-2xl border border-zinc-100 bg-white p-4">
                     <p className="text-xs uppercase text-zinc-500">
-                      Safety notes
+                      Day {slides[activeSlide].day.day}
                     </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-600">
-                      {recommendation.safetyNotes.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
+                    <p className="text-base font-semibold text-zinc-900">
+                      {slides[activeSlide].day.title}
+                    </p>
+                    <p className="mt-2 text-sm text-zinc-600">
+                      {slides[activeSlide].day.description}
+                    </p>
+                    {slides[activeSlide].day.budgetTips && (
+                      <p className="mt-2 text-xs font-medium text-emerald-700">
+                        {slides[activeSlide].day.budgetTips}
+                      </p>
+                    )}
                   </div>
-                </div>
+                ) : null}
               </div>
             ) : (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-zinc-200 px-6 py-10 text-center text-sm text-zinc-500">
