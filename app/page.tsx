@@ -53,7 +53,7 @@ export default function Home() {
 
     return [
       { type: "summary" },
-      ...recommendation.itinerary.map((day) => ({ type: "day", day })),
+      ...recommendation.itinerary.map((day) => ({ type: "day" as const, day })),
     ];
   }, [recommendation]);
 
