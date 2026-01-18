@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import destinationOptions from "./data/destinations.json";
@@ -273,6 +274,16 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-50 px-4 py-10 text-zinc-900 sm:px-8 lg:px-16">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/budvisory-ai-logo.svg"
+              alt="Budvisory-AI"
+              width={180}
+              height={56}
+              className="h-10 w-auto"
+              priority
+            />
+          </div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
             Budvisory AI
           </p>
