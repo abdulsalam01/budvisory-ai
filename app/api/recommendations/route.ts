@@ -1,34 +1,12 @@
 import { NextResponse } from "next/server";
 
-type RecommendationRequest = {
-  origin: string;
-  destination: string;
-  duration: number;
-  budget: number;
-  salary?: number;
-  age?: number;
-  dreamTrip?: boolean;
-  notes?: string;
-};
+import type {
+  RecommendationRequest,
+  RecommendationResponse,
+} from "@/lib/recommendations/types";
 
-type RecommendationResponse = {
-  destination: string;
-  summary: string;
-  estimatedDailyBudget: string;
-  totalEstimatedCost: string;
-  estimatedSavings: string;
-  budgetAdvisory: string;
-  itinerary: {
-    day: number;
-    title: string;
-    description: string;
-    budgetTips?: string;
-  }[];
-  packingList: string[];
-  safetyNotes: string[];
-};
-
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const GEMINI_API_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 const buildPrompt = (payload: RecommendationRequest) => {
   return `You are a travel planner for domestic travel in Indonesia.

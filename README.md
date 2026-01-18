@@ -1,11 +1,14 @@
-# Budvisory-AI
+# Budvisory AI
 
 ![Budvisory-AI logo](public/budvisory-ai-logo.svg)
 
 Budvisory-AI is an AI travel budget advisor designed to help people plan realistic domestic trips in Indonesia. It turns budget constraints into actionable, day-by-day itineraries with practical cost guidance.
 
 ## Project Name
-Budvisory-AI
+Budvisory AI
+
+## Repository Name
+budvisory-ai
 
 ## Team Members
 - Abdul Salam (abdulsalam01)
