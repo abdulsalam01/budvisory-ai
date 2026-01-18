@@ -48,7 +48,7 @@ npm install
 ```
 
 ## Environment Variables
-Create a `.env.local` file in the project root and add:
+Create a `.env` file in the project root and add:
 
 ```
 GEMINI_API_KEY=your_api_key_here
@@ -67,4 +67,4 @@ npm install
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+3. Open [http://localhost:3006](http://localhost:3006) in your browser.
