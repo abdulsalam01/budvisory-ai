@@ -4,23 +4,21 @@
 
 Budvisory-AI is an AI travel budget advisor designed to help people plan realistic domestic trips in Indonesia. It turns budget constraints into actionable, day-by-day itineraries with practical cost guidance.
 
-## The Problem
+## Project Name
+Budvisory-AI
+
+## Team Members
+- Abdul Salam (abdulsalam01)
+- Ario Purbo
+
+## Problem Statement
 Travel planning is often stressful and uncertain, especially when budgets are tight:
 
 - Travel content is generic and rarely reflects real Indonesian prices.
 - Budget uncertainty creates stress and overthinking.
 - Travelers don’t know if their plans are financially feasible.
 
-## Target Audience
-Budvisory-AI is built for:
-
-- Young professionals
-- Students
-- Budget-conscious travelers
-
-They want inspiration that is financially sound and actionable.
-
-## The Solution
+## Solution Overview
 Budvisory-AI is budget-first and Indonesia-focused. Users provide:
 
 - Origin city
@@ -35,50 +33,38 @@ In seconds, the system generates:
 - Packing list
 - Safety notes
 
-## How It Works
-1. Select origin city (or use current location).
-2. Choose destination.
-3. Input trip duration and total budget.
-4. (Optional) Enable Dream Destination mode.
-5. Add preferences like local food or specific places.
-6. Generate recommendations with one click.
+## Tech Stack Used
+- **Next.js** for a fast, production-ready web framework with file-based routing, built-in performance optimizations, and a smooth developer experience.
+- **TypeScript** for safe, maintainable code with strong typing, enabling efficient collaboration and fewer runtime surprises.
 
-Budvisory-AI returns itinerary recommendations tailored to real budget conditions instead of generic suggestions.
+Together, Next.js and TypeScript are a smart, efficient choice for this project because they make it effortless to ship a reliable, performant app while keeping the codebase clean and scalable.
 
-## Demo Output Example
-A 3-day trip from Yogyakarta to Jakarta with a 7,000,000 IDR budget can produce:
-
-- Daily budget: Rp 1,500,000
-- Total estimated cost: Rp 4,500,000
-- Savings buffer: Rp 2,500,000
-
-Alongside the numbers, users get advisory tips, recommended transport options, and a packing list.
-
-## Unique Value Proposition
-Unlike destination-centric travel tools, Budvisory-AI is budget-centric. It blends local travel context with financial practicality—like having a travel planner and a financial advisor combined.
-
-## Why Now?
-Domestic travel in Indonesia is growing rapidly. Travelers want clarity and confidence, while AI adoption is expanding—making this the right time to launch Budvisory-AI.
-
-## Business Model & Roadmap
-We plan to generate revenue through:
-
-- Freemium subscriptions with premium itinerary export
-- Partnerships with travel services (transportation, hotels)
-- In-app premium advisory features
-
-Roadmap highlights:
-
-- Multilingual support
-- Personalized recommendations
-- Mobile app deployment
-
-## Getting Started
-Install dependencies and run the development server:
+## Setup Instructions
+1. Ensure you have Node.js (LTS recommended) and npm installed.
+2. Install dependencies:
 
 ```bash
 npm install
+```
+
+## Environment Variables
+Create a `.env` file in the project root and add:
+
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+## Step-by-Step Guide to Run Locally
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Start the development server:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+3. Open [http://localhost:3006](http://localhost:3006) in your browser.
